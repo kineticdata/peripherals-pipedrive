@@ -70,18 +70,6 @@ class PipedriveApiV1
         error_message = e.inspect
       end
 
-      # Retry the handler if attempting to update a stale object
-      if (!error.nil? && @method.to_s.upcase == "PUT" && response_code == 400 &&
-            error_key == "stale_record" && retries < max_retries)
-        puts "Retrying update due to Stale Object Exception. Retry #{retries.to_s}: #{api_route}" if @debug_logging_enabled
-        # Increment Retry Count
-        retries += 1
-        # Reset Error Message and Response Code
-        error_message = nil
-        error_key = nil
-        retry
-      end
-
       # Raise the error if instructed to, otherwise will fall through to
       # return an error message.
       raise if @error_handling == "Raise Error"

@@ -5,7 +5,7 @@ This handler is used to interact with the Pipedrive api
 [Error Handling]
   Select between returning an error message, or raising an exception.
 [Method]
-  HTTP Method to use for the Kinetic Core API call being made.
+  HTTP Method to use for the Pipedrive API call being made.
   Options are:
     - GET
     - POST
