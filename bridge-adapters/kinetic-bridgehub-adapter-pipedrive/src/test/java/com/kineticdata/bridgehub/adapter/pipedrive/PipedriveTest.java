@@ -1,6 +1,5 @@
 package com.kineticdata.bridgehub.adapter.pipedrive;
 
-import com.kineticdata.bridgehub.adapter.pipedrive.PipedriveAdapter;
 import com.kineticdata.bridgehub.adapter.BridgeAdapterTestBase;
 import com.kineticdata.bridgehub.adapter.BridgeError;
 import com.kineticdata.bridgehub.adapter.BridgeRequest;
@@ -64,7 +63,7 @@ public class PipedriveTest extends BridgeAdapterTestBase{
         BridgeError error = null;
 
         BridgeRequest request = new BridgeRequest();
-        request.setStructure("Persons");
+        request.setStructure("Deals");
         request.setFields(new ArrayList<>());
         request.setQuery("");
         request.setParameters(new HashMap());
@@ -100,12 +99,12 @@ public class PipedriveTest extends BridgeAdapterTestBase{
         
         // Create the Bridge Request
         List<String> fields = new ArrayList<>();
-        fields.add("person_name");
-        fields.add("org_name");
-        fields.add("owner_name");
+        fields.add("name");
+        fields.add("first_name");
+        fields.add("last_name");
         
         BridgeRequest request = new BridgeRequest();
-        request.setStructure("Deals");
+        request.setStructure("Persons");
         request.setFields(fields);
         request.setQuery("id=<%=parameter[\"Id\"]%>");
         
@@ -130,19 +129,18 @@ public class PipedriveTest extends BridgeAdapterTestBase{
         
         // Create the Bridge Request
         List<String> fields = new ArrayList<>();
-        fields.add("person_name");
-        fields.add("org_name");
-        fields.add("owner_name");
+        fields.add("name");
+        fields.add("first_name");
+        fields.add("last_name");
         
         BridgeRequest request = new BridgeRequest();
-        request.setStructure("Deals");
+        request.setStructure("Persons");
         request.setFields(fields);
-        request.setQuery("searchText=<%=parameter[\"User Name\"]%>");
+        request.setQuery("id=<%=parameter[\"Id\"]%>");
         
         request.setParameters(new HashMap<String, String>() {{ 
-            put("User Name", "chad.rehm@kineticdata.com");
+            put("Id", "1");
         }});
-        
         
         Record record = null;
         try {
@@ -156,7 +154,7 @@ public class PipedriveTest extends BridgeAdapterTestBase{
 
         // Test Adhoc query
         request.setStructure("Adhoc");
-        request.setQuery("/people/lookup?searchText=<%=parameter[\"User Name\"]%>");
+        request.setQuery("/persons/<%=parameter[\"Id\"]%>");
         
         
         Record adhocRecord = null;
@@ -272,28 +270,4 @@ public class PipedriveTest extends BridgeAdapterTestBase{
 //        assertTrue(records.getRecords().size() > 0);
 //    }
     
-    @Test
-    public void test_bad_url() throws Exception{
-        BridgeError error = null;
-        
-        BridgeRequest request = new BridgeRequest();
-        request.setStructure("Adhoc");
-        request.setFields(new ArrayList<>());
-        request.setQuery("/<%=parameter[\"App Id\"]%>/tickets/<%=parameter[\"Ticket Id\"]%>/notes");
-        
-        request.setParameters(new HashMap<String, String>() {{ 
-            put("App Id", "1625");
-            put("Ticket Id", "12534501");
-        }});
-        
-        
-        Record record = null;
-        try {
-            record = getAdapter().retrieve(request);
-        } catch (BridgeError e) {
-            error = e;
-        }
-        
-        assertNull(error);
-    }
 }
