@@ -8,8 +8,8 @@
     
     <name>kinetic-bridgehub-adapter-pipedrive</name>
     <scm>
-        <connection>scm:git:https://github.com/kineticcommunity/kinetic-bridgehub-teamdynamix.git</connection>
-        <developerConnection>scm:git:https://github.com/kineticcommunity/kinetic-bridgehub-adapter-teamdynamix.git</developerConnection>
+        <connection>scm:git:https://github.com/kineticcommunitydata/peripherals-pipedrive.git</connection>
+        <developerConnection>scm:git:https://github.com/kineticdata/peripherals-pipedrive.git</developerConnection>
     </scm>
     
     <distributionManagement>
@@ -51,9 +51,9 @@
             <version>1.1.1</version>
         </dependency>
         <dependency>
-            <groupId>com.kineticdata.bridges.adapter</groupId>
-            <artifactId>kinetic-bridgehub-adapter</artifactId>
-            <version>1.1.0</version>
+            <groupId>com.kineticdata.agent</groupId>
+            <artifactId>kinetic-agent-adapter</artifactId>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>

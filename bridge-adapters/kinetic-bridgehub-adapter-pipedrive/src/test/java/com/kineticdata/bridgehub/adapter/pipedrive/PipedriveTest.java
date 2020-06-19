@@ -195,7 +195,7 @@ public class PipedriveTest extends BridgeAdapterTestBase{
         assertTrue(records.getRecords().size() > 0);
         
         request.setStructure("Adhoc");
-        request.setQuery("/people/lookup");
+        request.setQuery("/deals");
         request.setParameters(new HashMap<String, String>());
                 
         RecordList adhocRecords = null;
@@ -215,16 +215,18 @@ public class PipedriveTest extends BridgeAdapterTestBase{
         
        // Create the Bridge Request
         List<String> fields = new ArrayList<>();
-        fields.add("FullName");
+        fields.add("person_name");
+        fields.add("org_name");
+        fields.add("owner_name");
         
         BridgeRequest request = new BridgeRequest();
-        request.setStructure("People");
+        request.setStructure("Deals");
         request.setFields(fields);
         request.setQuery("");
         request.setParameters(new HashMap<String, String>());
         
         request.setMetadata(new HashMap<String, String>() {{
-            put("order", "<%=field[\"FullName\"]%>:DESC");
+            put("order", "<%=field[\"person_name\"]%>:DESC");
         }});
         
         RecordList records = null;
