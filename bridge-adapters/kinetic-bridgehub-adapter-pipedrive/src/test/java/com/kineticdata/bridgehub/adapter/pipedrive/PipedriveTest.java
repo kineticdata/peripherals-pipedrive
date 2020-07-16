@@ -102,6 +102,7 @@ public class PipedriveTest extends BridgeAdapterTestBase{
         fields.add("name");
         fields.add("first_name");
         fields.add("last_name");
+        fields.add("$.org_id.name");
         
         BridgeRequest request = new BridgeRequest();
         request.setStructure("Persons");

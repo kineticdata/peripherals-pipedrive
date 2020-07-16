@@ -61,7 +61,7 @@ public class PipedriveApiHelper {
         }
         catch (IOException e) {
             throw new BridgeError(
-                "Unable to make a connection to the Azure service server.", e);
+                "Unable to make a connection to the service server.", e);
         }
         
         return output;

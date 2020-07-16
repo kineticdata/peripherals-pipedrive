@@ -1,5 +1,8 @@
 package com.kineticdata.bridgehub.adapter.pipedrive;
 
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.JsonPathException;
 import com.kineticdata.bridgehub.adapter.BridgeAdapter;
 import com.kineticdata.bridgehub.adapter.BridgeError;
 import com.kineticdata.bridgehub.adapter.BridgeRequest;
@@ -191,11 +194,6 @@ public class PipedriveAdapter implements BridgeAdapter {
         Map<String, String> parameters = getParameters(
             parser.parse(request.getQuery(),request.getParameters()), mapping);
         
-        List<String> fields = request.getFields();
-        if (fields == null) {
-            fields = new ArrayList();
-        }
-        
         // Path builder functions may mutate the parameters Map;
         String path = mapping.getPathbuilder().apply(structureList, parameters);
         
@@ -212,14 +210,12 @@ public class PipedriveAdapter implements BridgeAdapter {
             // Reassign object to single result 
             JSONObject object = (JSONObject)responseArray.get(0);
                 
-            // Set object to user defined fields
-            Set<Object> removeKeySet = buildKeySet(fields, object);
-            object.keySet().removeAll(removeKeySet);
-
-            // Create a Record object from the responce JSONObject
-            record = new Record(object);
+            List<String> fields = getFields(request.getFields() == null ? 
+                new ArrayList() : request.getFields(), object);
+            record = buildRecord(fields, object);
         } else if (responseArray.size() == 0) {
             LOGGER.debug("No results found for query: {}", request.getQuery());
+            record = new Record();
         } else {
             throw new BridgeError ("Retrieve must return a single result."
                 + " Multiple results found.");
@@ -249,11 +245,6 @@ public class PipedriveAdapter implements BridgeAdapter {
         Map<String, String> metadata = request.getMetadata() != null ?
                 request.getMetadata() : new HashMap<>();
 
-        List<String> fields = request.getFields();
-        if (fields == null) {
-            fields = new ArrayList();
-        }
-
         LinkedHashMap<String,String> sortOrderItems = null; 
         // adapter side sorting requires an order be set by request
         if (request.getMetadata("order") != null) {
@@ -276,18 +267,15 @@ public class PipedriveAdapter implements BridgeAdapter {
 
         // Create a List of records that will be used to make a RecordList object
         List<Record> recordList = new ArrayList<>();
-        
-        if(responseArray != null && responseArray.isEmpty() != true){
-            JSONObject firstObject = (JSONObject)responseArray.get(0);
-
-            // Set object to user defined fields
-            Set<Object> removeKeySet = buildKeySet(fields, firstObject);
+        List<String> fields = request.getFields() == null ? new ArrayList() : 
+            request.getFields();        
+        if (responseArray != null && responseArray.isEmpty() != true){
+            fields = getFields(fields, (JSONObject)responseArray.get(0));
 
             // Iterate through the responce objects and make a new Record for each.
             for (Object o : responseArray) {
-                JSONObject entry = (JSONObject)o;
-                entry.keySet().removeAll(removeKeySet);
-                Record record= new Record(entry);
+                JSONObject obj = (JSONObject)o;
+                Record record = buildRecord(fields, obj);
                 
                 // Add the created record to the list of records
                 recordList.add(record);
@@ -307,6 +295,44 @@ public class PipedriveAdapter implements BridgeAdapter {
     /*----------------------------------------------------------------------------------------------
      * HELPER METHODS
      *--------------------------------------------------------------------------------------------*/
+    protected List<String> getFields(List<String> fields, JSONObject jsonobj) {
+        // if no fields were provided then all fields will be returned. 
+        if(fields.isEmpty()){
+            fields.addAll(jsonobj.keySet());
+        }
+        
+        return fields;
+    }
+    
+    /**
+     * Build a Record.  If no fields are provided all fields will be returned.
+     * 
+     * @param fields
+     * @param jsonobj
+     * @return Record
+     */
+    protected Record buildRecord (List<String> fields, JSONObject jsonobj) {
+        JSONObject obj = new JSONObject();
+        DocumentContext jsonContext = JsonPath.parse(jsonobj); 
+        
+        fields.stream().forEach(field -> {
+            // either use JsonPath or just add the field value.  We're assuming
+            // all JsonPath usages will begin with $[ or $.. 
+            if (field.startsWith("$.") || field.startsWith("$[")) {
+                try {
+                    obj.put(field, jsonContext.read(field));
+                } catch (JsonPathException e) {
+                    throw new JsonPathException(String.format("There was an issue"
+                        + " reading %s", field), e);
+                }
+            } else {
+                obj.put(field, jsonobj.get(field));
+            }
+        });
+        
+        return new Record(obj, fields);
+    }
+    
     protected JSONArray getResponseData(Object responseData) {
         JSONArray responseArray = new JSONArray();
         
