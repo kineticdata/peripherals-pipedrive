@@ -10,3 +10,6 @@ Pipedrive [handlers] (2020-06-15)
   [pipedrive_api_v1]
     * Removed code and updated readme
 
+Pipedrive [bridge-adapters] (2020-07-16)
+  [kinetic-bridgehub-adapter-pipedrive]
+    * Added JsonPath library
