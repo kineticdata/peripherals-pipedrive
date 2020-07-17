@@ -8,11 +8,15 @@ Name | Description
 Token | The application token
 ___
 ## Supported structures
-* Deals
-* Persons
+Name | Parameter * required
+------------ | -------------
+Deals | id
+Persons | id
+Adhoc | 
 ___
 ## Example Qualification Mapping
 * user_id=55555555
 ___
 ## Notes
+* [JsonPath](https://github.com/json-path/JsonPath#path-examples) can be used to access nested values. The root of the path is values.
 * To get a single person or deal provide id=${id}
