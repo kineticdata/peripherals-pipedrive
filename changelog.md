@@ -13,3 +13,7 @@ Pipedrive [handlers] (2020-06-15)
 Pipedrive [bridge-adapters] (2020-07-16)
   * [kinetic-bridgehub-adapter-pipedrive]
     * Added JsonPath library
+
+Pipedrive [bridge-adapters] (2024-02-20)
+  * [kinetic-bridgehub-adapter-pipedrive]
+    * updated org.json version due to vulnerability
